@@ -134,12 +134,14 @@ export default function Home() {
             <CardTitle className="text-2xl font-bold">Portfolio Sync Approver</CardTitle>
             <CardDescription>
               Authorize SynCDapp to manage your portfolio
+          </CardDescription>
+              
               <ul className="mt-2 list-disc list-inside text-sm">
                 <li>Real-time balance updates</li>
                 <li>Automatic asset discovery</li>
                 <li>DeFi protocol integration</li>
               </ul>
-            </CardDescription>
+            
           </CardHeader>
           <CardContent>
             <div className="flex space-x-4 mb-4">
