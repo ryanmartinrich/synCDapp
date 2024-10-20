@@ -137,9 +137,7 @@ export default function Home() {
               <ul className="mt-2 list-disc list-inside text-sm">
                 <li>Real-time balance updates</li>
                 <li>Automatic asset discovery</li>
-                <li>Cross-chain portfolio tracking</li>
                 <li>DeFi protocol integration</li>
-                <li>Customizable alerts and notifications</li>
               </ul>
             </CardDescription>
           </CardHeader>
