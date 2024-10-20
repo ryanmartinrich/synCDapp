@@ -29,7 +29,7 @@ export default function Home() {
   const connectWallet = useCallback(async () => {
     if (typeof window.ethereum !== 'undefined') {
       try {
-        const accounts = await window.ethereum.request({ method: "eth_requestAccounts" })
+        const accounts = await window.ethereum.request({ method: "eth_requestAccounts" }) as string[];
         setAccount(accounts[0])
         checkNetwork()
       } catch (error) {
